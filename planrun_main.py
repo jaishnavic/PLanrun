@@ -55,4 +55,4 @@ def run_plan(payload: UserQuery,username: str = Depends(authenticate_user)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("planrun_main:app", host="0.0.0.0", port=8004, reload=True)
+    uvicorn.run("planrun_main:app", host="0.0.0.0", port=8006, reload=True)

@@ -50,44 +50,46 @@ Response format (ALWAYS):
 }
 """
 
+
 def call_llm(user_prompt: str) -> dict:
-    response = client.models.generate_content(
+    try:
+        response = client.models.generate_content(
             model="models/gemini-2.5-flash",
             contents=f"{SYSTEM_PROMPT}\n\nUser input:\n{user_prompt}"
         )
 
-    if not response or not response.text:
-            return {}
-
-
-    raw_text = response.text.strip()
-
-    # 🔐 HARDENING: extract JSON safely
-    try:
-        parsed = json.loads(raw_text)
-    except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", raw_text, re.DOTALL)
-        if not match:
-            return _default_response(raw_text)
+        raw_text = response.text.strip()
 
         try:
-            parsed = json.loads(match.group())
+            return json.loads(raw_text)
         except json.JSONDecodeError:
-            return _default_response(raw_text)
+            match = re.search(r"\{.*\}", raw_text, re.DOTALL)
+            if match:
+                return json.loads(match.group())
 
-    # 🛡️ Enforce contract
-    intent = parsed.get("intent", "RUN_SUPPLY_PLAN")
-    mode_label = parsed.get("mode_label", "DEFAULT")
+        return {
+            "intent": "ERROR",
+            "error": "Invalid JSON returned by LLM"
+        }
 
-    return {
-        "intent": "RUN_SUPPLY_PLAN" if intent != "RUN_SUPPLY_PLAN" else intent,
-        "mode_label": mode_label.upper()
-    }
+    except ClientError as e:
+        # 🔥 HANDLE GEMINI QUOTA / RATE LIMIT
+        if e.status_code == 429:
+            return {
+                "intent": "ERROR",
+                "error_type": "LLM_QUOTA_EXCEEDED",
+                "message": "LLM quota exceeded. Please try again later."
+            }
 
+        return {
+            "intent": "ERROR",
+            "error_type": "LLM_CLIENT_ERROR",
+            "message": str(e)
+        }
 
-def _default_response(raw_text: str) -> dict:
-    return {
-        "intent": "RUN_SUPPLY_PLAN",
-        "mode_label": "DEFAULT",
-        "raw_output": raw_text
-    }
+    except Exception as e:
+        return {
+            "intent": "ERROR",
+            "error_type": "LLM_UNKNOWN_ERROR",
+            "message": str(e)
+        }
