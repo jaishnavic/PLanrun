@@ -47,11 +47,26 @@ def run_supply_plan_agent(user_input: str) -> str:
 def read_root():
     return {"message": "Supply Plan Runs Agent is running."}
 
+import asyncio
+from fastapi import Depends
+
 @app.post("/run-plan")
-def run_plan(payload: UserQuery,username: str = Depends(authenticate_user)):
+async def run_plan(
+    payload: UserQuery,
+    username: str = Depends(authenticate_user)
+):
+    loop = asyncio.get_running_loop()
+
+    response = await loop.run_in_executor(
+        None,
+        run_supply_plan_agent,
+        payload.query
+    )
+
     return {
-        "response": run_supply_plan_agent(payload.query)
+        "response": response
     }
+
 
 if __name__ == "__main__":
     import uvicorn
