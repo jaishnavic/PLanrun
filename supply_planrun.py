@@ -49,7 +49,7 @@ def run_supply_plan(mode: int) -> dict:
 SUPPLY_PLAN_ID_RELEASE = "300000320243039"
 
 RELEASE_ENDPOINT = (
-    f"/fscmRestApi/resources/11.13.18.05/supplyChainPlans/{SUPPLY_PLAN_ID}/child/Releases"
+    f"/fscmRestApi/resources/11.13.18.05/supplyChainPlans/{SUPPLY_PLAN_ID_RELEASE}/child/Releases"
 )
 
 def create_release_plan() -> dict:
