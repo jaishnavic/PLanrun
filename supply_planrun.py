@@ -47,3 +47,38 @@ def run_supply_plan(mode: int) -> dict:
 
     return response.json()
 
+
+RELEASE_ENDPOINT = (
+    f"/fscmRestApi/resources/11.13.18.05/supplyChainPlans/{SUPPLY_PLAN_ID}/child/Releases"
+)
+
+def create_release_plan() -> dict:
+    url = f"{FUSION_BASE_URL}{RELEASE_ENDPOINT}"
+
+    headers = {
+        "Content-Type": "application/vnd.oracle.adf.resourceitem+json",
+        "Accept": "application/json",
+        "REST-Framework-Version": "4"
+    }
+
+
+    response = requests.post(
+        url,
+        headers=headers,
+        json={},   # Empty body as per API
+        auth=HTTPBasicAuth(FUSION_USERNAME, FUSION_PASSWORD),
+        timeout=30
+    )
+
+    # 🔍 Debug logs (keep during testing)
+    print("Fusion URL:", url)
+    print("Fusion Status:", response.status_code)
+    print("Fusion Body:", response.text)
+
+    if response.status_code not in (200, 201):
+        raise Exception(
+            f"Fusion Release API Error | Status: {response.status_code} | Body: {response.text}"
+        )
+
+    return response.json()
+

@@ -8,45 +8,59 @@ from google.genai.errors import ClientError
 # Load environment variables
 load_dotenv()
 
-# Read API key
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
 if not GEMINI_API_KEY:
     raise RuntimeError("GEMINI_API_KEY not found in environment variables")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-# 🔹 SYSTEM PROMPT FOR SUPPLY PLAN RUNS
+# 🔹 SYSTEM PROMPT FOR SUPPLY PLAN ACTIONS
 SYSTEM_PROMPT = """
 You are an Oracle Fusion Supply Planning assistant.
 
 Your task:
-- Identify whether the user wants to RUN a supply plan
-- Identify the execution mode
+- Identify the user's intent related to supply plans
+- Identify execution mode ONLY if the intent is RUN_SUPPLY_PLAN
 
-You MUST return ONLY valid JSON.
-Do NOT add explanations or extra text.
-
-Valid intent:
+Valid intents:
 - RUN_SUPPLY_PLAN
+- CREATE_RELEASE_PLAN
 
-Valid mode_label values:
+Valid mode_label values (ONLY for RUN_SUPPLY_PLAN):
 - SIMULATION
 - REPLAN
 - FULL
 - DEFAULT
 
 Rules:
+- If user asks to run / execute / start a plan → RUN_SUPPLY_PLAN
+- If user asks to create / generate / publish a release → CREATE_RELEASE_PLAN
+
+Mode rules (RUN_SUPPLY_PLAN only):
 - "simulation" → SIMULATION
 - "replan" → REPLAN
 - "full" → FULL
-- If mode is not clearly mentioned → DEFAULT
-- If the user intent is unclear, still assume RUN_SUPPLY_PLAN
+- If not mentioned → DEFAULT
 
-Response format (ALWAYS):
+For CREATE_RELEASE_PLAN:
+- Do NOT infer mode
+- Always return mode_label as null
+
+Return ONLY valid JSON.
+Do NOT add explanations or extra text.
+
+Response formats:
+
+RUN PLAN:
 {
   "intent": "RUN_SUPPLY_PLAN",
   "mode_label": "DEFAULT"
+}
+
+CREATE RELEASE:
+{
+  "intent": "CREATE_RELEASE_PLAN",
+  "mode_label": null
 }
 """
 
@@ -60,6 +74,7 @@ def call_llm(user_prompt: str) -> dict:
 
         raw_text = response.text.strip()
 
+        # 🔐 HARDEN JSON PARSING
         try:
             return json.loads(raw_text)
         except json.JSONDecodeError:
@@ -69,11 +84,11 @@ def call_llm(user_prompt: str) -> dict:
 
         return {
             "intent": "ERROR",
-            "error": "Invalid JSON returned by LLM"
+            "error": "Invalid JSON returned by LLM",
+            "raw_output": raw_text
         }
 
     except ClientError as e:
-        # 🔥 HANDLE GEMINI QUOTA / RATE LIMIT
         if e.status_code == 429:
             return {
                 "intent": "ERROR",

@@ -5,9 +5,11 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi import FastAPI, HTTPException, Depends
 
 from llm_client import call_llm
-from supply_planrun import run_supply_plan
-from utils.formatter import format_run_response
+from supply_planrun import run_supply_plan,create_release_plan
+from utils.formatter import format_run_response,format_release_response
 from config import SUPPLY_PLAN_ID
+
+
 
 app = FastAPI(title="Supply Plan Runs Agent")
 
@@ -31,6 +33,7 @@ def run_supply_plan_agent(user_input: str) -> str:
 
     if llm_output.get("intent") != "RUN_SUPPLY_PLAN":
         return "❌ Unable to identify a supply plan run request."
+    
 
     # 🔒 Fixed mode for now (FULL)
     mode = 3
@@ -65,6 +68,23 @@ async def run_plan(
 
     return {
         "response": response
+    }
+
+@app.post("/release-plan")
+async def release_plan(
+    username: str = Depends(authenticate_user)
+):
+    loop = asyncio.get_running_loop()
+
+    fusion_response = await loop.run_in_executor(
+        None,
+        create_release_plan
+    )
+
+    formatted = format_release_response(fusion_response)
+
+    return {
+        "response": formatted
     }
 
 
