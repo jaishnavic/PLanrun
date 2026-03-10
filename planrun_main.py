@@ -58,6 +58,8 @@ async def run_plan(
     payload: UserQuery,
     username: str = Depends(authenticate_user)
 ):
+    print("🔥 RUN PLAN endpoint triggered")
+
     loop = asyncio.get_running_loop()
 
     response = await loop.run_in_executor(
@@ -66,9 +68,9 @@ async def run_plan(
         payload.query
     )
 
-    return {
-        "response": response
-    }
+    return {"response": response}
+
+    
 
 @app.post("/release-plan")
 async def release_plan(
@@ -87,6 +89,6 @@ async def release_plan(
         "response": formatted
     }
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run("planrun_main:app", host="0.0.0.0", port=8006, reload=True)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("planrun_main:app", host="0.0.0.0", port=8006, reload=True)
