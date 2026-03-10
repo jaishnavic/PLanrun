@@ -59,6 +59,8 @@ async def run_plan(
     username: str = Depends(authenticate_user)
 ):
     print("🔥 RUN PLAN endpoint triggered")
+    print("Incoming payload:", payload)
+
 
     loop = asyncio.get_running_loop()
 
@@ -70,7 +72,7 @@ async def run_plan(
 
     return {"response": response}
 
-    
+
 
 @app.post("/release-plan")
 async def release_plan(
