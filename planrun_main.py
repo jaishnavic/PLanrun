@@ -75,21 +75,19 @@ async def run_plan(
 
 
 @app.post("/release-plan")
-async def release_plan(
-    username: str = Depends(authenticate_user)
-):
+async def release_plan(username: str = Depends(authenticate_user)):
+
+    print("🔥 RELEASE PLAN ENDPOINT HIT")
+
     loop = asyncio.get_running_loop()
 
     fusion_response = await loop.run_in_executor(
-        None,
-        create_release_plan
+        None, create_release_plan
     )
 
     formatted = format_release_response(fusion_response)
 
-    return {
-        "response": formatted
-    }
+    return {"response": formatted}
 
 # if __name__ == "__main__":
 #     import uvicorn
