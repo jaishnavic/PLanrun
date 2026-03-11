@@ -9,7 +9,7 @@ from config import (
 
 
 SUPPLIER_ENDPOINT = (
-    f"/fscmRestApi/resources/11.13.18.05/supplyPlans/{SUPPLY_PLAN_ID}/child/Runs"
+    f"/fscmRestApi/resources/11.13.18.05/demandAndSupplyPlans/{SUPPLY_PLAN_ID}/child/Runs"
 )
 
 def run_supply_plan(mode: int) -> dict:
