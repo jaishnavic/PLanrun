@@ -10,23 +10,14 @@ Job ID        : {data.get('JobId')}
 The supply plan has been submitted for execution.
 """
 
-def format_release_response(data: dict) -> dict:
-    """
-    Formats Fusion Create Release response for user consumption.
-    Removes internal links and keeps business-relevant fields.
-    """
+def format_release_response(resp):
 
-    if not isinstance(data, dict):
-        return {"message": "Invalid release response from Fusion"}
+    return f"""
+Supply Plan Release Triggered ✅
 
-    return {
-        "planId": data.get("PlanId"),
-        "executionId": data.get("ExecutionId"),
-        "releaseStatus": data.get("ReleaseStatus"),
-        "essJobId": data.get("ESSJobId"),
-        "startDate": data.get("StartDate"),
-        "endDate": data.get("EndDate"),
-        "executionUser": data.get("ExecutionUser"),
-        "planAction": data.get("PlanAction"),
-        "message": data.get("Message", "")
-    }
+Plan ID       : {resp.get('PlanId')}
+Execution ID  : {resp.get('ExecutionId')}
+ESS Job ID    : {resp.get('ESSJobId')}
+
+The release process has been successfully submitted.
+"""
