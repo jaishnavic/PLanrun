@@ -8,6 +8,8 @@ from llm_client import call_llm
 from supply_planrun import run_supply_plan,create_release_plan
 from utils.formatter import format_run_response,format_release_response
 from config import SUPPLY_PLAN_ID
+from pegging_services import get_transaction_ids
+from pegging_services import get_all_pegged_details
 
 
 
@@ -89,6 +91,42 @@ async def release_plan(username: str = Depends(authenticate_user)):
 
     return {"response": formatted}
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run("planrun_main:app", host="0.0.0.0", port=8006, reload=True)
+
+@app.get("/transactions")
+async def get_transactions(username: str = Depends(authenticate_user)):
+
+    print("🔥 TRANSACTION ENDPOINT HIT")
+
+    loop = asyncio.get_running_loop()
+
+    transactions = await loop.run_in_executor(
+        None,
+        get_transaction_ids
+    )
+
+    return {
+        "planId": SUPPLY_PLAN_ID,
+        "transactionIds": transactions
+    }
+
+@app.get("/pegged-details")
+async def pegged_details(username: str = Depends(authenticate_user)):
+
+    print("🔥 PEGGED DETAILS ENDPOINT HIT")
+
+    loop = asyncio.get_running_loop()
+
+    results = await loop.run_in_executor(
+        None,
+        get_all_pegged_details
+    )
+
+    return {
+        "planId": SUPPLY_PLAN_ID,
+        "peggedDemands": results
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("planrun_main:app", host="0.0.0.0", port=8006, reload=True)
