@@ -101,6 +101,7 @@ def extract_pegged_details(data: dict):
             "organization": item.get("Organization"),
             "orderType": item.get("OrderTypeText"),
             "orderNumber": item.get("OrderNumber"),
+            "orderQuantity": item.get("OrderQuantity"),
             "peggedQuantity": item.get("PeggedQuantity"),
             "dueDate": item.get("SuggestedDueDate")
         })
