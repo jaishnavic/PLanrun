@@ -148,10 +148,12 @@ def get_planned_orders(limit: int = 10):
             "suggestedDueDate": item.get("SuggestedDueDate"),
 
             "suggestedShipDate": item.get("SuggestedShipDate"),
+            "suggestedCompletionDate": item.get("SuggestedCompletionDate"),
 
             # Need-by dates
             "needByDate": item.get("NeedByDate"),
             "originalNeedByDate": item.get("OriginalNeedByDate"),
+            "LastUpdateDate": item.get("LastUpdateDate"),
 
             # Promised dates
             "promisedArrivalDate": item.get("PromisedArrivalDate"),
@@ -170,8 +172,9 @@ def get_planned_orders(limit: int = 10):
             "scheduledShipDate": item.get("ScheduledShipDate"),
 
             # Additional useful context
-            "planner": item.get("Planner"),
-            "releaseStatus": item.get("ReleaseStatusText")
+            "reservedQuantity": item.get("ReservedQuantity"),
+            "releaseStatustext": item.get("ReleaseStatusText"),
+            
         })
 
     return planned_orders
