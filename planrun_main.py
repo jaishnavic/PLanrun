@@ -10,6 +10,7 @@ from utils.formatter import format_run_response,format_release_response
 from config import SUPPLY_PLAN_ID
 from pegging_services import get_transaction_ids
 from pegging_services import get_all_pegged_details
+from supply_planrun import get_planned_orders
 
 
 
@@ -124,6 +125,23 @@ async def pegged_details(username: str = Depends(authenticate_user)):
     return {
         "planId": SUPPLY_PLAN_ID,
         "peggedDemands": results
+    }
+
+@app.get("/planned-orders")
+async def planned_orders(username: str = Depends(authenticate_user)):
+
+    print("🔥 PLANNED ORDERS ENDPOINT HIT")
+
+    loop = asyncio.get_running_loop()
+
+    results = await loop.run_in_executor(
+        None,
+        get_planned_orders
+    )
+
+    return {
+        "planId": SUPPLY_PLAN_ID,
+        "plannedOrders": results
     }
 
 

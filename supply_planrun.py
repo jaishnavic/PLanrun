@@ -83,4 +83,97 @@ def create_release_plan() -> dict:
 
     return response.json()
 
+#Supply details
+
+SUPPLIES_ENDPOINT = (
+    f"/fscmRestApi/resources/11.13.18.05/supplyPlans/{SUPPLY_PLAN_ID}/child/PlanningSupplies"
+)
+
+
+def get_planned_orders(limit: int = 10):
+
+    url = f"{FUSION_BASE_URL}{SUPPLIES_ENDPOINT}"
+
+    headers = {
+        "Accept": "application/json",
+        "REST-Framework-Version": "4"
+    }
+
+    params = {
+        "onlyData": "true",
+        "limit": limit
+    }
+
+    response = requests.get(
+        url,
+        headers=headers,
+        params=params,
+        auth=HTTPBasicAuth(FUSION_USERNAME, FUSION_PASSWORD),
+        timeout=30
+    )
+
+    print("Fusion Supplies URL:", response.url)
+    print("Fusion Status:", response.status_code)
+
+    if response.status_code != 200:
+        raise Exception(
+            f"Fusion Supplies API Error | Status: {response.status_code} | Body: {response.text}"
+        )
+
+    data = response.json()
+
+    planned_orders = []
+
+    for item in data.get("items", []):
+
+        # if item.get("OrderTypeText") == "Planned order":
+
+        planned_orders.append({
+            "itemDescription": item.get("ItemDescription"),
+            "item": item.get("Item"),
+            "organization": item.get("Organization"),
+            "orderType": item.get("OrderTypeText"),
+            "firmStatus": item.get("FirmStatus"),
+
+            "orderNumber": item.get("OrderNumber"),
+            "orderQuantity": item.get("OrderQuantity"),
+
+            "planId": item.get("PlanId"),
+            "makeOrBuy": item.get("MakeOrBuy"),
+
+            # Suggested planning dates (the four main planning dates)
+            "suggestedOrderDate": item.get("SuggestedOrderDate"),
+            "suggestedStartDate": item.get("SuggestedStartDate"),
+            "suggestedDockDate": item.get("SuggestedDockDate"),
+            "suggestedDueDate": item.get("SuggestedDueDate"),
+
+            "suggestedShipDate": item.get("SuggestedShipDate"),
+
+            # Need-by dates
+            "needByDate": item.get("NeedByDate"),
+            "originalNeedByDate": item.get("OriginalNeedByDate"),
+
+            # Promised dates
+            "promisedArrivalDate": item.get("PromisedArrivalDate"),
+            "promisedShipDate": item.get("PromisedShipDate"),
+
+            # Requested dates
+            "requestedArrivalDate": item.get("RequestedArrivalDate"),
+            "requestedShipDate": item.get("RequestedShipDate"),
+
+            # Scheduling adjustments
+            "rescheduleDays": item.get("RescheduleDays"),
+            "rescheduled": item.get("Rescheduled"),
+            "compressionDays": item.get("CompressionDays"),
+
+            # Shipment scheduling
+            "scheduledShipDate": item.get("ScheduledShipDate"),
+
+            # Additional useful context
+            "planner": item.get("Planner"),
+            "releaseStatus": item.get("ReleaseStatusText")
+        })
+
+    return planned_orders
+
 
