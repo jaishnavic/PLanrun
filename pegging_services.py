@@ -13,7 +13,7 @@ TRANSACTION_ENDPOINT = (
 )
 
 
-def get_transaction_ids(limit: int = 10) -> list:
+def get_transaction_ids(limit: int = 20) -> list:
 
     url = f"{FUSION_BASE_URL}{TRANSACTION_ENDPOINT}"
 
@@ -23,6 +23,7 @@ def get_transaction_ids(limit: int = 10) -> list:
     }
 
     params = {
+        "q": "OrderType=5",   # filter planned orders
         "limit": limit,
         "onlyData": "true"
     }

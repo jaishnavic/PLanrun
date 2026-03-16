@@ -85,50 +85,51 @@ def create_release_plan() -> dict:
 
 #Supply details
 
-SUPPLIES_ENDPOINT = (
-    f"/fscmRestApi/resources/11.13.18.05/supplyPlans/{SUPPLY_PLAN_ID}/child/PlanningSupplies"
-)
+from pegging_services import get_transaction_ids
 
 
 def get_planned_orders(limit: int = 10):
 
-    url = f"{FUSION_BASE_URL}{SUPPLIES_ENDPOINT}"
+    transactions = get_transaction_ids(limit)
+
+    planned_orders = []
 
     headers = {
         "Accept": "application/json",
         "REST-Framework-Version": "4"
     }
 
-    params = {
-        "onlyData": "true",
-        "limit": limit
-    }
+    for tx in transactions:
 
-    response = requests.get(
-        url,
-        headers=headers,
-        params=params,
-        auth=HTTPBasicAuth(FUSION_USERNAME, FUSION_PASSWORD),
-        timeout=30
-    )
+        endpoint = f"/fscmRestApi/resources/11.13.18.05/supplyPlans/{SUPPLY_PLAN_ID}/child/PlanningSupplies/{tx}"
+        url = f"{FUSION_BASE_URL}{endpoint}"
 
-    print("Fusion Supplies URL:", response.url)
-    print("Fusion Status:", response.status_code)
+        params = {
+            "onlyData": "true"
+        }
 
-    if response.status_code != 200:
-        raise Exception(
-            f"Fusion Supplies API Error | Status: {response.status_code} | Body: {response.text}"
+        response = requests.get(
+            url,
+            headers=headers,
+            params=params,
+            auth=HTTPBasicAuth(FUSION_USERNAME, FUSION_PASSWORD),
+            timeout=30
         )
 
-    data = response.json()
+        print("Fusion Supplies URL:", response.url)
+        print("Fusion Status:", response.status_code)
 
-    planned_orders = []
+        if response.status_code != 200:
+            raise Exception(
+                f"Fusion Supplies API Error | Status: {response.status_code} | Body: {response.text}"
+            )
 
-    for item in data.get("items", []):
-
-        # if item.get("OrderTypeText") == "Planned order":
+        item = response.json()
 
         planned_orders.append({
+
+            "transactionId": tx,
+
             "itemDescription": item.get("ItemDescription"),
             "item": item.get("Item"),
             "organization": item.get("Organization"),
@@ -141,7 +142,6 @@ def get_planned_orders(limit: int = 10):
             "planId": item.get("PlanId"),
             "makeOrBuy": item.get("MakeOrBuy"),
 
-            # Suggested planning dates (the four main planning dates)
             "suggestedOrderDate": item.get("SuggestedOrderDate"),
             "suggestedStartDate": item.get("SuggestedStartDate"),
             "suggestedDockDate": item.get("SuggestedDockDate"),
@@ -150,33 +150,24 @@ def get_planned_orders(limit: int = 10):
             "suggestedShipDate": item.get("SuggestedShipDate"),
             "suggestedCompletionDate": item.get("SuggestedCompletionDate"),
 
-            # Need-by dates
             "needByDate": item.get("NeedByDate"),
             "originalNeedByDate": item.get("OriginalNeedByDate"),
-            "LastUpdateDate": item.get("LastUpdateDate"),
+            "lastUpdateDate": item.get("LastUpdateDate"),
 
-            # Promised dates
             "promisedArrivalDate": item.get("PromisedArrivalDate"),
             "promisedShipDate": item.get("PromisedShipDate"),
 
-            # Requested dates
             "requestedArrivalDate": item.get("RequestedArrivalDate"),
             "requestedShipDate": item.get("RequestedShipDate"),
 
-            # Scheduling adjustments
             "rescheduleDays": item.get("RescheduleDays"),
             "rescheduled": item.get("Rescheduled"),
             "compressionDays": item.get("CompressionDays"),
 
-            # Shipment scheduling
             "scheduledShipDate": item.get("ScheduledShipDate"),
 
-            # Additional useful context
             "reservedQuantity": item.get("ReservedQuantity"),
-            "releaseStatustext": item.get("ReleaseStatusText"),
-            
+            "releaseStatusText": item.get("ReleaseStatusText"),
         })
 
     return planned_orders
-
-
