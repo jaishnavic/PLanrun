@@ -151,9 +151,19 @@ import base64
 # -----------------------------
 @app.get("/getReport")
 def get_report(
-    reportXDOpath: str = Query(..., description="Report Path (e.g. /JOHN/John_report.xdo)")
+    reportXDOpath: str = Query(
+        None,
+        description="Report Path (e.g. /JOHN/John_report.xdo)"
+    )
 ):
     try:
+        # ✅ TEMP: Hardcoded path (for testing)
+        if not reportXDOpath:
+            reportXDOpath = "/JOHN/John_report.xdo"
+            print("⚠️ Using default report path:", reportXDOpath)
+        else:
+            print("✅ Using user input report path:", reportXDOpath)
+
         # 🔥 Call Fusion
         response = call_fusion(reportXDOpath)
 
@@ -177,6 +187,7 @@ def get_report(
         json_data = excel_to_json(report_bytes)
 
         return {
+            "reportPath": reportXDOpath,
             "data": json_data,
             "count": len(json_data)
         }
