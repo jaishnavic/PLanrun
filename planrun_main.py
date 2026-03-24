@@ -151,10 +151,8 @@ import base64
 # -----------------------------
 @app.get("/getReport")
 def get_report(
-    reportXDOpath: str = Query(
-        None,
-        description="Report Path (e.g. /JOHN/John_report.xdo)"
-    )
+    reportXDOpath: str = Query(None),
+    limit: int = Query(1000)   # 👈 ADD THIS
 ):
     try:
         # ✅ TEMP: Hardcoded path (for testing)
@@ -186,10 +184,13 @@ def get_report(
         # 🔥 Convert Excel → JSON
         json_data = excel_to_json(report_bytes)
 
+        # 👇 LIMIT DATA
+        limited_data = json_data[:limit]
+
         return {
-            "reportPath": reportXDOpath,
-            "data": json_data,
-            "count": len(json_data)
+            "data": limited_data,
+            "count": len(json_data),
+            "returned": len(limited_data)
         }
 
     except Exception as e:
