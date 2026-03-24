@@ -143,6 +143,46 @@ async def planned_orders(username: str = Depends(authenticate_user)):
         "planId": SUPPLY_PLAN_ID,
         "plannedOrders": results
     }
+from OTBI_report import call_fusion, extract_report_bytes, extract_fault, excel_to_json
+from fastapi import Query
+import base64
+# -----------------------------
+# API
+# -----------------------------
+@app.get("/getReport")
+def get_report(
+    reportXDOpath: str = Query(..., description="Report Path (e.g. /JOHN/John_report.xdo)")
+):
+    try:
+        # 🔥 Call Fusion
+        response = call_fusion(reportXDOpath)
+
+        print("STATUS:", response.status_code)
+
+        if response.status_code != 200:
+            fault = extract_fault(response.text)
+            raise HTTPException(status_code=500, detail=fault)
+
+        report_b64 = extract_report_bytes(response.text)
+
+        if not report_b64:
+            fault = extract_fault(response.text)
+            raise HTTPException(status_code=500, detail=fault)
+
+        report_bytes = base64.b64decode(report_b64.strip())
+
+        print("Excel size:", len(report_bytes))
+
+        # 🔥 Convert Excel → JSON
+        json_data = excel_to_json(report_bytes)
+
+        return {
+            "data": json_data,
+            "count": len(json_data)
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
