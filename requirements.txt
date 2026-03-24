@@ -7,3 +7,4 @@ asyncio
 flask
 zeep
 pytest
+openpyxl
