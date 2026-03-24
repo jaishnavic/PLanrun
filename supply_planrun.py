@@ -83,6 +83,81 @@ def create_release_plan() -> dict:
 
     return response.json()
 
+#RunCollections Endpoint
+
+Run_Collections_Endpoint = (f"/fscmRestApi/resources/11.13.18.05/dataCollections")
+
+def run_data_collection() -> dict:
+    url = f"{FUSION_BASE_URL}{Run_Collections_Endpoint}"
+    headers = {
+       
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "REST-Framework-Version": "4"
+        }
+
+    payload ={
+            "TemplateName": "RFA1",
+            "SourceSystem": "OPS",
+            "CollectionType": "1"
+    }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        json=payload,   # Empty body as per API
+        auth=HTTPBasicAuth(FUSION_USERNAME, FUSION_PASSWORD),
+        timeout=30
+    )
+
+    if response.status_code not in (200, 201):
+        raise Exception(
+            f"Fusion Release API Error | Status: {response.status_code} | Body: {response.text}"
+        )
+
+    return response.json()
+
+collection_status_endpoint = ("/fscmRestApi/resources/11.13.18.05/dataCollections")
+
+def get_collection_status() -> dict:
+
+    url = f"{FUSION_BASE_URL}{collection_status_endpoint}?limit=50"
+
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "REST-Framework-Version": "4"
+    }
+
+    response = requests.get(
+        url,
+        headers=headers,
+        auth=HTTPBasicAuth(FUSION_USERNAME, FUSION_PASSWORD),
+        timeout=30
+    )
+
+    if response.status_code not in (200, 201):
+        raise Exception(
+            f"Fusion Collection Status API Error | Status: {response.status_code} | Body: {response.text}"
+        )
+
+    data = response.json()
+
+    # 🔹 Simplify response for agent
+    simplified_items = []
+
+    for item in data.get("items", []):
+        simplified_items.append({
+            "essJobId": str(item.get("ESSCollectionJobId")),
+            "phase": item.get("ProcPhase"),
+            "status": item.get("Status"),
+            "startTime": item.get("StartTime"),
+            "endTime": item.get("EndTime"),
+            "refreshNumber": item.get("RefreshNumber"),
+            "instanceId": item.get("InstanceId")
+        })
+
+    return {"items": simplified_items}
 #Supply details
 
 from pegging_services import get_transaction_ids
@@ -171,3 +246,7 @@ def get_planned_orders(limit: int = 10):
         })
 
     return planned_orders
+
+
+
+

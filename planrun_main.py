@@ -5,8 +5,8 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi import FastAPI, HTTPException, Depends
 
 from llm_client import call_llm
-from supply_planrun import run_supply_plan,create_release_plan
-from utils.formatter import format_run_response,format_release_response
+from supply_planrun import run_supply_plan,create_release_plan,run_data_collection,get_collection_status
+from utils.formatter import format_run_response,format_release_response, format_collection_response,format_collection_status_response
 from config import SUPPLY_PLAN_ID
 from pegging_services import get_transaction_ids
 from pegging_services import get_all_pegged_details
@@ -194,6 +194,41 @@ def get_report(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/run-collection")
+async def run_collections(username: str = Depends(authenticate_user)):
+
+    print("🔥 DATA COLLECTION ENDPOINT HIT")
+
+    loop = asyncio.get_running_loop()
+
+    # Call the function in a thread to avoid blocking
+    response = await loop.run_in_executor(
+        None,
+        run_data_collection
+    )
+
+    formatted = format_collection_response(response)
+
+    return {"response": formatted}
+
+@app.get("/collection-status")
+async def collection_status(username: str = Depends(authenticate_user)):
+
+    print("🔥 COLLECTION STATUS ENDPOINT HIT")
+
+    loop = asyncio.get_running_loop()
+
+    response = await loop.run_in_executor(
+        None,
+        get_collection_status
+    )
+
+    formatted = format_collection_status_response(response)
+
+    return {"response": formatted}
 
 
 if __name__ == "__main__":
