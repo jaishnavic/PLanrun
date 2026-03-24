@@ -4,3 +4,6 @@ requests
 python-dotenv
 google-genai
 asyncio
+flask
+zeep
+pytest

@@ -13,8 +13,8 @@ TRANSACTION_ENDPOINT = (
 )
 
 
-def get_transaction_ids(limit: int = 20) -> list:
-
+def get_transaction_ids(limit = 500) -> list:
+  
     url = f"{FUSION_BASE_URL}{TRANSACTION_ENDPOINT}"
 
     headers = {
@@ -23,7 +23,7 @@ def get_transaction_ids(limit: int = 20) -> list:
     }
 
     params = {
-        "q": "OrderType=5",   # filter planned orders
+        # "q": "OrderType=5 OR OrderType=1030 OR OrderType=1029",
         "limit": limit,
         "onlyData": "true"
     }
@@ -104,7 +104,9 @@ def extract_pegged_details(data: dict):
             "orderNumber": item.get("OrderNumber"),
             "orderQuantity": item.get("OrderQuantity"),
             "peggedQuantity": item.get("PeggedQuantity"),
-            "dueDate": item.get("SuggestedDueDate")
+            "dueDate": item.get("SuggestedDueDate"),
+            "endDemandId": item.get("EndDemandId"),
+            "endDemandOrderNumber": item.get("EndDemandOrderNumber"),
         })
 
     return results
