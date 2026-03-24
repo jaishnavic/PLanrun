@@ -159,10 +159,10 @@ def get_report(
     try:
         # ✅ TEMP: Hardcoded path (for testing)
         if not reportXDOpath:
-            reportXDOpath = "/JOHN/John_report.xdo"
-            print("⚠️ Using default report path:", reportXDOpath)
+            reportXDOpath = "/Rapidflow/RFA_Report.xdo"
+            print(" Using default report path:", reportXDOpath)
         else:
-            print("✅ Using user input report path:", reportXDOpath)
+            print(" Using user input report path:", reportXDOpath)
 
         # 🔥 Call Fusion
         response = call_fusion(reportXDOpath)
