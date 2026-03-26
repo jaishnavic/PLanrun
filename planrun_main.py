@@ -152,7 +152,7 @@ import base64
 @app.get("/getReport")
 def get_report(
     reportXDOpath: str = Query(None),
-    limit: int = Query(1500)   # 👈 ADD THIS
+    limit: int = Query(1000)   # 👈 ADD THIS
 ):
     try:
         # ✅ TEMP: Hardcoded path (for testing)
