@@ -152,12 +152,12 @@ import base64
 @app.get("/getReport")
 def get_report(
     reportXDOpath: str = Query(None),
-    limit: int = Query(1000)   # 👈 ADD THIS
+    limit: int = Query(5000)   # 👈 ADD THIS
 ):
     try:
         # ✅ TEMP: Hardcoded path (for testing)
         if not reportXDOpath:
-            reportXDOpath = "/Rapidflow/RFA_Report.xdo"
+            reportXDOpath = "/Rapidflow/RF_Report2.xdo"
             print(" Using default report path:", reportXDOpath)
         else:
             print(" Using user input report path:", reportXDOpath)
