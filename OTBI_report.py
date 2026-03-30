@@ -115,10 +115,18 @@ def excel_to_json(excel_bytes):
 
         record = {}
         for idx, col_index in enumerate(valid_indexes):
-            record[headers[idx]] = row[col_index] if col_index < len(row) else None
+            value = row[col_index] if col_index < len(row) else None
+
+            # 🔥 Auto format date fields
+            if isinstance(value, str) and "T" in value:
+                try:
+                    value = value.split("T")[0]
+                except:
+                    pass
+
+            record[headers[idx]] = value
 
         data.append(record)
 
+
     return data
-
-

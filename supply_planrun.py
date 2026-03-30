@@ -247,6 +247,35 @@ def get_planned_orders(limit: int = 10):
 
     return planned_orders
 
+item_details = f"/fscmRestApi/resources/11.13.18.05/supplyPlans/{SUPPLY_PLAN_ID}/child/Items"
+
+def get_item_details()-> dict:
+
+        url = f"{FUSION_BASE_URL}{item_details}"
+
+
+        headers = {
+            "Accept": "application/json",
+            "REST-Framework-Version": "4"
+        }
+
+        response = requests.get(
+            url,
+            headers=headers,
+            auth=HTTPBasicAuth(FUSION_USERNAME, FUSION_PASSWORD),
+            timeout=30
+        )
+
+        if response.status_code != 200:
+            raise Exception(
+                f"Fusion Item Details API Error | Status: {response.status_code} | Body: {response.text}"
+            )
+
+        return response.json()
+
+        
+
+
 
 
 

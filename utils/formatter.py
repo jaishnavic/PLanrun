@@ -55,3 +55,31 @@ def format_collection_status_response(resp: dict) -> str:
         """
 
     return message
+
+
+def format_items_output(resp: dict) -> dict:
+
+    items = resp.get("items", [])
+
+    if not items:
+        return {"items": [], "message": "No items found"}
+
+    formatted_items = []
+
+    for item in items:
+
+        formatted_items.append({
+            "ItemName": item.get("ItemName"),
+            "Organization": item.get("Organization"),
+            "MakeOrBuy": item.get("MakeOrBuy"),
+            "ProcessingLeadTime": item.get("ProcessingLeadTime"),
+            "PostprocessingLeadTime": item.get("PostprocessingLeadTime"),
+            "PreprocessingLeadTime": item.get("PreprocessingLeadTime"),
+            "VariableLeadTime": item.get("VariableLeadTime"),
+            "FixedLeadTime": item.get("FixedLeadTime")
+        })
+
+    return {
+        # "count": len(formatted_items),
+        "items": formatted_items
+    }
