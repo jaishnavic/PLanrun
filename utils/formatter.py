@@ -13,14 +13,12 @@ The supply plan has been submitted for execution.
 def format_release_response(resp):
 
     return f"""
-Supply Plan Release Triggered ✅
 
 Plan ID       : {resp.get('PlanId')}
 Execution ID  : {resp.get('ExecutionId')}
 ESS Job ID    : {resp.get('ESSJobId')}
 Message       : {resp.get('Message')}
 
-The release process has been successfully submitted.
 """
 
 def format_collection_response(resp: dict) -> str:
@@ -32,8 +30,6 @@ Source System    : {resp.get('SourceSystem')}
 Collection Type  : {resp.get('CollectionType')}
 ESS Job ID : {resp.get('ESSCollectionJobId')}
 Status : {resp.get('Status')}
-
-The data collection process has been successfully submitted.
 """
 
 def format_collection_status_response(resp: dict) -> str:
