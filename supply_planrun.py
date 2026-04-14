@@ -312,7 +312,7 @@ def get_plan_details() -> dict:
     # 🔹 Simplified response
     return {
         "Plan ID": data.get("PlanId"),
-        "Plan Name": data.get("ompileDesignator"),
+        "Plan Name": data.get("CompileDesignator"),
         "PlanCompletionDate": data.get("PlanCompletionDate"),
         "LastRunDate": data.get("LastRunDate"),
         "PlanCreationDate": data.get("CreationDate"),
