@@ -261,7 +261,8 @@ async def plan_details(username: str = Depends(authenticate_user)):
 
     formatted = format_plan_details(response)
 
-    return {"response": formatted}  
+    return {"response": formatted}
+
 
 if __name__ == "__main__":
     import uvicorn

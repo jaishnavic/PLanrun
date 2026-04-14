@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
+# override=True
+
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 FUSION_BASE_URL = os.getenv("FUSION_BASE_URL")
@@ -12,5 +14,5 @@ FUSION_PASSWORD = os.getenv("FUSION_PASSWORD")
 
 SUPPLY_PLAN_ID = "300000324048036"
 
-# print(FUSION_USERNAME, FUSION_PASSWORD, FUSION_BASE_URL)
+print(FUSION_USERNAME, FUSION_PASSWORD, FUSION_BASE_URL)
 

@@ -80,16 +80,15 @@ def format_items_output(resp: dict) -> dict:
         "items": formatted_items
     }
 
-def format_plan_details(resp: dict):
+def format_plan_details(resp: dict) -> str:
 
-    if not resp:
-        return "No plan details found."
+    return f"""
+Supply Plan Details 📊
 
-    return {
-        "Plan ID": resp.get("PlanId"),
-        "Plan Name": resp.get("CompileDesignator"),
-        "PlanCompletionDate": resp.get("PlanCompletionDate"),
-        "LastRunDate": resp.get("LastRunDate"),
-        "PlanCreationDate": resp.get("CreationDate"),
-        "PlanStartDate": resp.get("PlanStartDate"),
-    }
+Plan ID            : {resp.get('Plan ID')}
+Plan Name          : {resp.get('Plan Name')}
+Plan Start Date    : {resp.get('PlanStartDate')}
+Plan Completion    : {resp.get('PlanCompletionDate')}
+Last Run Date      : {resp.get('LastRunDate')}
+Plan Created On    : {resp.get('PlanCreationDate')}
+"""
