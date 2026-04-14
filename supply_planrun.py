@@ -273,6 +273,40 @@ def get_item_details()-> dict:
 
         return response.json()
 
+plan_details = f"/fscmRestApi/resources/11.13.18.05/plans/{SUPPLY_PLAN_ID}"
+
+def get_plan_details()-> dict:
+    """Function to get the supply plan details from Fusion using the REST API. 
+    This includes information such as plan name, description, status, and key dates.
+    Usually we'll get dates information, plan creation date, plan last run date, plan last updated date.
+    """
+    url = f"{FUSION_BASE_URL}{plan_details}"
+
+
+    headers = {
+            "Accept": "application/json",
+            "REST-Framework-Version": "4"
+        }
+    
+    params = {
+    "onlyData": "true"
+    }
+
+    response = requests.get(
+            url,
+            headers=headers,
+            params=params,
+            auth=HTTPBasicAuth(FUSION_USERNAME, FUSION_PASSWORD),
+            timeout=30
+        )
+
+    if response.status_code != 200:
+            raise Exception(
+                f"Fusion Plan Details API Error | Status: {response.status_code} | Body: {response.text}"
+            )
+
+    return response.json()
+
         
 
 

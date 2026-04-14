@@ -5,8 +5,8 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi import FastAPI, HTTPException, Depends
 
 from llm_client import call_llm
-from supply_planrun import run_supply_plan,create_release_plan,run_data_collection,get_collection_status, get_item_details
-from utils.formatter import format_run_response,format_release_response, format_collection_response,format_collection_status_response, format_items_output
+from supply_planrun import run_supply_plan,create_release_plan,run_data_collection,get_collection_status, get_item_details, get_plan_details
+from utils.formatter import format_run_response,format_release_response, format_collection_response,format_collection_status_response, format_items_output, format_plan_details
 from config import SUPPLY_PLAN_ID
 from pegging_services import get_transaction_ids
 from pegging_services import get_all_pegged_details
@@ -247,6 +247,21 @@ async def item_details(username: str = Depends(authenticate_user)):
 
     return {"response": formatted}
 
+@app.get("/plan-details")
+async def plan_details(username: str = Depends(authenticate_user)):
+
+    print("🔥 PLAN DETAILS ENDPOINT HIT")
+
+    loop = asyncio.get_running_loop()
+
+    response = await loop.run_in_executor(
+        None,
+        get_plan_details
+    )
+
+    formatted = format_plan_details(response)
+
+    return {"response": formatted}  
 
 if __name__ == "__main__":
     import uvicorn

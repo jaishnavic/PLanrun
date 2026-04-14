@@ -18,6 +18,7 @@ Supply Plan Release Triggered ✅
 Plan ID       : {resp.get('PlanId')}
 Execution ID  : {resp.get('ExecutionId')}
 ESS Job ID    : {resp.get('ESSJobId')}
+Message       : {resp.get('Message')}
 
 The release process has been successfully submitted.
 """
@@ -67,7 +68,6 @@ def format_items_output(resp: dict) -> dict:
     formatted_items = []
 
     for item in items:
-
         formatted_items.append({
             "ItemName": item.get("ItemName"),
             "Organization": item.get("Organization"),
@@ -82,4 +82,18 @@ def format_items_output(resp: dict) -> dict:
     return {
         # "count": len(formatted_items),
         "items": formatted_items
+    }
+
+def format_plan_details(resp: dict):
+
+    if not resp:
+        return "No plan details found."
+
+    return {
+        "Plan ID": resp.get("PlanId"),
+        "Plan Name": resp.get("CompileDesignator"),
+        "PlanCompletionDate": resp.get("PlanCompletionDate"),
+        "LastRunDate": resp.get("LastRunDate"),
+        "PlanCreationDate": resp.get("CreationDate"),
+        "PlanStartDate": resp.get("PlanStartDate"),
     }
